@@ -10,7 +10,7 @@ const SUI_PROVER_ENDPOINT = 'https://prover-dev.mystenlabs.com/v1';
 const providers = {
     google: {
         clientId: "1023115981397-hq2a1s77sdk6k3etfh494c8oiaiqlmnl.apps.googleusercontent.com",
-        redirectURI: "https://vercel.com/eze-ransoms-projects/met-zk",
+        redirectURI: "https://met-zk.vercel.app/",
     },
     twitch: {
         clientId: "ltu7mhvfj4l04maulcjcqx1wm5e5zh",
