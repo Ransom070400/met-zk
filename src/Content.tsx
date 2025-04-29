@@ -10,7 +10,7 @@ const SUI_PROVER_ENDPOINT = 'https://prover-dev.mystenlabs.com/v1';
 const providers = {
     google: {
         clientId: "1023115981397-hq2a1s77sdk6k3etfh494c8oiaiqlmnl.apps.googleusercontent.com",
-        redirectURI: "https://met-zk.vercel.app",
+        redirectURI: "http://localhost:5173",
     },
     twitch: {
         clientId: "ltu7mhvfj4l04maulcjcqx1wm5e5zh",
