@@ -1,54 +1,116 @@
-# React + TypeScript + Vite
+# Ransoms react-sui-zk-login-kit
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React Kit for seamless ZK Login integration for Sui blokchain
 
-Currently, two official plugins are available:
+## Table of Contents
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. [Installation](#installation)
+2. [Usage](#usage)
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
+## Installation
+
+```bash
+npm install react-sui-zk-login-kit react -S
+```
+
+```bash
+yarn add react-sui-zk-login-kit react
+```
+
+---
+
+## Usage
+
+#### For Next JS
+
+- use Provider and Component with 'use-client'
+- if experience problem with default remove hash from url try "disableRemoveHash" prop
+
+### Example Usage in Your React App
+
+**App.tsx**
+
+```tsx
+import {SuiClient} from '@mysten/sui/client';
+import {Content} from "./Content";
+import {ZKLoginProvider} from 'react-sui-zk-login-kit';
+
+const FULLNODE_URL = "https://fullnode.devnet.sui.io/";
+const suiClient = new SuiClient({url: FULLNODE_URL});
+
+function App() {
+    return (
+        <ZKLoginProvider client={suiClient}>
+            <Content/>
+        </ZKLoginProvider>
+    )
+}
+
+export default App;
+```
+
+**Content.tsx**
+
+```tsx
+iimport { useEffect, useState } from "react";
+import { generateRandomness } from "@mysten/sui/zklogin";
+import { ZKLogin, useZKLogin } from "react-sui-zk-login-kit";
+
+// Values can be stored in .env
+const SUI_PROVER_ENDPOINT = 'https://prover-dev.mystenlabs.com/v1';
+
+const providers = {
+    google: {
+        clientId: "1023115981397-hq2a1s77sdk6k3etfh494c8oiaiqlmnl.apps.googleusercontent.com",
+        redirectURI: "http://localhost:5173",
     },
-  },
-})
+    twitch: {
+        clientId: "ltu7mhvfj4l04maulcjcqx1wm5e5zh",
+        redirectURI: "http://localhost:5173",
+    },
+   
+    
+};
+
+export const Content = () => {
+    const { encodedJwt, setUserSalt, address, logout } = useZKLogin();
+    const [loginSuccessful, setLoginSuccessful] = useState(false);
+
+    useEffect(() => {
+        if (encodedJwt) {
+            // Mock request to simulate fetching user salt
+            const requestMock = new Promise(
+                (resolve): void =>
+                    resolve(localStorage.getItem("userSalt") || generateRandomness())
+            );
+
+            requestMock.then(salt => {
+                setUserSalt(String(salt));
+                setLoginSuccessful(true); // Set login successful to true
+            });
+        }
+    }, [encodedJwt]);
+
+    if (address) {
+        return (
+            <div>
+                <span>Your Address: {address}</span>
+                <button onClick={logout}>Logout</button>
+                {loginSuccessful && <p>Login Successful!</p>}
+            </div>
+        );
+    }
+
+    return (
+        <ZKLogin
+            providers={providers} // Ensure all providers are passed here
+            proverProvider={SUI_PROVER_ENDPOINT}
+        />
+    );
+};
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+---
